@@ -30,10 +30,15 @@
       background-color: #000000;
     }
     /* 让父容器占满视口，配合 ENVELOP 模式铺满屏幕 */
+    /* 以游戏原始宽高比(400x240)为参考，优先占满高度，水平居中。
+       过窄屏时自动受 100vw 限制，保持完整显示并留上下边。 */
     #phaser-game {
-      width: 100vw;
       height: 100vh;
+      max-width: 100vw;
+      aspect-ratio: 400 / 240;
+      margin: 0 auto; /* 水平居中 */
       overflow: hidden;
+      display: block;
     }
   </style>
 
