@@ -11,8 +11,10 @@
     "sourceMap": true,
     "strictPropertyInitialization": false,
     "lib": ["dom", "es5", "esnext"],
+    "skipLibCheck": true,
+    "types": []
   },
-  "inclue": [
+  "include": [
     "src",
     "src/types/*.d.ts"
   ]

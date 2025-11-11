@@ -5,10 +5,9 @@
   "homepage": "https://github.com/yandeu/phaser-project-template#readme",
   "main": "index.js",
   "scripts": {
-    "start": "webpack-dev-server --config webpack/webpack.dev.js",
-    "build": "webpack --config webpack/webpack.prod.js",
-    "bundle": "npm run build",
-    "serve": "serve dist"
+    "dev": "webpack-dev-server --config webpack/webpack.dev.js",
+    "preview": "serve dist",
+    "build": "webpack --config webpack/webpack.prod.js"
   },
   "keywords": [
     "Phaser3",
