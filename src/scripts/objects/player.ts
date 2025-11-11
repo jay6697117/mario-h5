@@ -37,6 +37,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
    * 最近一次安全落地的位置（用于复活）
    */
   private lastSafePos: { x: number; y: number }
+  private reviveProtectTimer?: Phaser.Time.TimerEvent
 
   /**
    * 确保用于复活粒子的贴图已生成
@@ -209,9 +210,18 @@ export default class Player extends Phaser.GameObjects.Sprite {
     this.body.checkCollision.none = false
     this.body.setAcceleration(0, 0).setVelocity(0, 0)
     this.setPosition(nx, ny)
-    // 闪烁效果
+    // 结束可能遗留的透明度动画
+    this.scene.tweens.killTweensOf(this)
+    // 闪烁效果：短暂半透明并闪烁，完成后强制回到 1
     this.setAlpha(0.6)
-    this.scene.tweens.add({ targets: this, alpha: 1, duration: 120, yoyo: true, repeat: 8 })
+    this.scene.tweens.add({
+      targets: this,
+      alpha: 1,
+      duration: 100,
+      yoyo: true,
+      repeat: 6,
+      onComplete: () => this.setAlpha(1),
+    })
     this.protected = true
     this.anims.play('stand' + this.animSuffix, true)
     // 粒子爆发
@@ -229,7 +239,8 @@ export default class Player extends Phaser.GameObjects.Sprite {
     emitter.explode(24, nx, ny)
     this.scene.time.delayedCall(600, () => pm.destroy())
     // 短暂无敌，避免刚复活立刻再次死亡
-    this.scene.time.delayedCall(1500, () => {
+    if (this.reviveProtectTimer) this.reviveProtectTimer.remove()
+    this.reviveProtectTimer = this.scene.time.delayedCall(1500, () => {
       this.setAlpha(1)
       this.protected = false
     })
