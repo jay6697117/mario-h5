@@ -18,5 +18,5 @@ export default {
   /**
    * 游戏说明
    */
-  helpText: 'ARROW KEYS MOVE\n\nZ TO FIRE',
+  helpText: 'WASD / ARROWS MOVE\n\nB TO FIRE',
 }

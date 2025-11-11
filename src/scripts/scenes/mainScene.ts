@@ -42,7 +42,28 @@ export default class MainScene extends Phaser.Scene {
     const tileset = map.addTilesetImage('SuperMarioBros-World1-1', 'tiles')
     const worldLayer = map.createLayer('world', tileset!)!.setCollisionByProperty({ collide: true })
 
-    this.cursors = this.input.keyboard.createCursorKeys()
+    const arrows = this.input.keyboard.createCursorKeys()
+    const { KeyCodes } = Phaser.Input.Keyboard
+    const wasd = this.input.keyboard.addKeys({
+      up: KeyCodes.W,
+      left: KeyCodes.A,
+      down: KeyCodes.S,
+      right: KeyCodes.D,
+      space: KeyCodes.SPACE,
+    }) as any
+    const mergeKey = (a?: Phaser.Input.Keyboard.Key, b?: Phaser.Input.Keyboard.Key) =>
+      ({
+        get isDown() {
+          return Boolean(a?.isDown || b?.isDown)
+        },
+      }) as unknown as Phaser.Input.Keyboard.Key
+    this.cursors = {
+      up: mergeKey(arrows.up, wasd.up),
+      down: mergeKey(arrows.down, wasd.down),
+      left: mergeKey(arrows.left, wasd.left),
+      right: mergeKey(arrows.right, wasd.right),
+      space: mergeKey((arrows as any).space, wasd.space),
+    } as Phaser.Types.Input.Keyboard.CursorKeys
 
     // 添加背景音乐
     this.music = this.sound.add('overworld')

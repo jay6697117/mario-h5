@@ -11,7 +11,7 @@ import { Power } from './index'
  */
 @autoInjectable()
 export class Fire implements Power {
-  private key = 'keydown-Z'
+  private key = 'keydown-B'
   // 是否发射中
   private launch: boolean = false
   private fireBallGroup: Phaser.GameObjects.Group
