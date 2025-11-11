@@ -53,15 +53,19 @@ export default class Hud {
    */
   public layout(width?: number, zoom: number = 1) {
     const w = width ?? this.scene.sys.game.canvas.width
-    const uiScale = Math.max(1, Math.floor(zoom))
+    const camZoom = zoom || this.scene.cameras.main.zoom || 1
+    const invZoom = 1 / camZoom
     // 更合理的分布：靠左、偏左、中间、偏右、靠右
     const slots = [0.02, 0.22, 0.50, 0.78, 0.94]
     this.items.forEach((item, index) => {
       const text = this[item.key] as HeaderText
       const px = Math.round(w * (slots[index] ?? (index / this.items.length)))
-      text.x = index === 0 ? Math.max(8 * uiScale, px) : px
-      text.y = 8 * uiScale
-      text.setScale(uiScale)
+      // 将期望的屏幕像素位置换算到世界坐标，并反缩放，保持 HUD 不受相机缩放影响
+      const worldX = (index === 0 ? Math.max(8, px) : px) * invZoom
+      const worldY = 8 * invZoom
+      text.x = worldX
+      text.y = worldY
+      text.setScale(invZoom)
     })
   }
 }
