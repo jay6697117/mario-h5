@@ -38,6 +38,22 @@ export default class Player extends Phaser.GameObjects.Sprite {
    */
   private lastSafePos: { x: number; y: number }
 
+  /**
+   * 确保用于复活粒子的贴图已生成
+   */
+  private static ensureRespawnTexture(scene: Phaser.Scene) {
+    const key = 'respawn-spark'
+    if (!scene.textures.exists(key)) {
+      const g = scene.make.graphics({ x: 0, y: 0, add: false })
+      g.fillStyle(0xffffff, 1)
+      // 简单的像素风圆点
+      g.fillCircle(4, 4, 4)
+      g.generateTexture(key, 8, 8)
+      g.destroy()
+    }
+    return key
+  }
+
   constructor({ scene, x, y, texture, frame, allowPowers }: Config) {
     super(scene, x, y, texture, frame)
     scene.physics.world.enable(this)
@@ -193,9 +209,25 @@ export default class Player extends Phaser.GameObjects.Sprite {
     this.body.checkCollision.none = false
     this.body.setAcceleration(0, 0).setVelocity(0, 0)
     this.setPosition(nx, ny)
-    this.setAlpha(0.9)
+    // 闪烁效果
+    this.setAlpha(0.6)
+    this.scene.tweens.add({ targets: this, alpha: 1, duration: 120, yoyo: true, repeat: 8 })
     this.protected = true
     this.anims.play('stand' + this.animSuffix, true)
+    // 粒子爆发
+    const key = Player.ensureRespawnTexture(this.scene)
+    const pm = this.scene.add.particles(key)
+    const emitter = pm.createEmitter({
+      lifespan: 500,
+      speed: { min: 80, max: 180 },
+      quantity: 0,
+      scale: { start: 1, end: 0 },
+      angle: { min: 0, max: 360 },
+      gravityY: 0,
+      blendMode: 'ADD' as any,
+    })
+    emitter.explode(24, nx, ny)
+    this.scene.time.delayedCall(600, () => pm.destroy())
     // 短暂无敌，避免刚复活立刻再次死亡
     this.scene.time.delayedCall(1500, () => {
       this.setAlpha(1)
