@@ -163,6 +163,9 @@ export default class MainScene extends Phaser.Scene {
     // @ts-ignore
     this.physics.add.collider(brick, this.enemyGroup, this.brickColliderEnemy, undefined, this)
     this.physics.add.collider(brick, this.powerUpGroup)
+
+    // 监听尺寸变化，重新布局 HUD，并调整相机视口尺寸
+    this.scale.on('resize', this.onResize, this)
   }
 
   update(time: number, delta: number) {
@@ -345,5 +348,12 @@ export default class MainScene extends Phaser.Scene {
     if (window.confirm('GameOver!')) {
       this.restartGame(false)
     }
+  }
+
+  private onResize(gameSize: Phaser.Structs.Size) {
+    const width = gameSize.width
+    const height = gameSize.height
+    this.cameras.resize(width, height)
+    this.hud.layout(width)
   }
 }

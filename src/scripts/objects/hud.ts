@@ -6,8 +6,10 @@ interface TextItem {
 
 export default class Hud {
   private items: TextItem[] = []
+  private scene: Phaser.Scene
 
   constructor(scene: Phaser.Scene, items: TextItem[]) {
+    this.scene = scene
     const canvas = scene.sys.game.canvas
     const itemWidth = canvas.width / items.length
 
@@ -44,6 +46,17 @@ export default class Hud {
    */
   public incDec(key: string, value: number) {
     this[key].value = Number(this[key].value) + value
+  }
+
+  /**
+   * 根据画布宽度重新布局 HUD（在窗口尺寸变化时调用）
+   */
+  public layout(width?: number) {
+    const w = width ?? this.scene.sys.game.canvas.width
+    const itemWidth = w / this.items.length
+    this.items.forEach((item, index) => {
+      this[item.key].x = itemWidth * index || 16
+    })
   }
 }
 
