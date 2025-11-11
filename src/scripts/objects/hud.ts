@@ -82,8 +82,7 @@ export default class Hud {
     const w = width ?? this.scene.sys.game.canvas.width
     const camZoom = zoom || this.scene.cameras.main.zoom || 1
     const invZoom = 1 / camZoom
-    // 更合理的分布：靠左、偏左、中间、偏右、靠右
-    const slots = [0.02, 0.22, 0.50, 0.78, 0.94]
+    const slots = [0.20, 0.35, 0.50, 0.65, 0.80]
     this.items.forEach((item, index) => {
       const text = this[item.key] as HeaderText
       const px = Math.round(w * (slots[index] ?? (index / this.items.length)))
@@ -115,7 +114,18 @@ export class HeaderText extends Phaser.GameObjects.BitmapText {
   public update() {
     const v: any = this.value as any
     const isInf = v === Infinity || v === 'Infinity'
-    const display = isInf ? 'INF' : String(v)
+    let display = ''
+    if (isInf) {
+      display = 'INF'
+    } else {
+      const n = Number(v)
+      if (!isNaN(n)) {
+        const s = Math.floor(n).toString()
+        display = s.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+      } else {
+        display = String(v)
+      }
+    }
     this.setText(`${this.title}\n${display}`)
   }
 }
