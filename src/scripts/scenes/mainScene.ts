@@ -40,7 +40,7 @@ export default class MainScene extends Phaser.Scene {
 
     const map = this.make.tilemap({ key: 'map' })
     const tileset = map.addTilesetImage('SuperMarioBros-World1-1', 'tiles')
-    const worldLayer = map.createLayer('world', tileset).setCollisionByProperty({ collide: true })
+    const worldLayer = map.createLayer('world', tileset!)!.setCollisionByProperty({ collide: true })
 
     this.cursors = this.input.keyboard.createCursorKeys()
 
@@ -55,7 +55,7 @@ export default class MainScene extends Phaser.Scene {
     this.add.bitmapText(16, 100, 'font', config.helpText, 8).setDepth(100)
 
     // tile 动画
-    this.animatedTiles = new AnimatedTiles(map, tileset)
+    this.animatedTiles = new AnimatedTiles(map, tileset!)
 
     this.parseModifiersLayer(map, 'modifiers')
 
@@ -90,8 +90,10 @@ export default class MainScene extends Phaser.Scene {
     })
 
     const endPoint = worldLayer.findByIndex(5)
-    // 终点旗杆
-    new Flag(this, endPoint.pixelX, endPoint.pixelY).overlap(this.mario, () => this.restartGame(false))
+    // 终点旗杆（确保找到终点）
+    if (endPoint) {
+      new Flag(this, endPoint.pixelX, endPoint.pixelY).overlap(this.mario, () => this.restartGame(false))
+    }
 
     // 游戏倒计时
     new CountDown(this)
@@ -157,7 +159,8 @@ export default class MainScene extends Phaser.Scene {
    * @param name 图层名称
    */
   private parseModifiersLayer(map: Phaser.Tilemaps.Tilemap, name: string) {
-    const worldLayer = map.getLayer('world').tilemapLayer
+    const worldLayer = map.getLayer('world')?.tilemapLayer as Phaser.Tilemaps.TilemapLayer
+    if (!worldLayer) return
     const parser = {
       powerUp: (modifier: Phaser.Types.Tilemaps.TiledObject) => {
         const tile = worldLayer.getTileAt(Number(modifier.x) / 16, Number(modifier.y) / 16 - 1)
@@ -195,8 +198,10 @@ export default class MainScene extends Phaser.Scene {
       },
     }
 
-    map.getObjectLayer(name).objects.forEach((tiled) => {
-      parser[tiled.type]?.(tiled)
+    const objLayer = map.getObjectLayer(name)
+    if (!objLayer) return
+    objLayer.objects.forEach((tiled) => {
+      parser[(tiled as any).type]?.(tiled as any)
     })
   }
 
@@ -205,7 +210,9 @@ export default class MainScene extends Phaser.Scene {
    * @param name 图层名称
    */
   private parseEnemiesLayer(map: Phaser.Tilemaps.Tilemap, name: string) {
-    return map.getObjectLayer(name).objects.map((tile) => ({
+    const layer = map.getObjectLayer(name)
+    if (!layer) return [] as any[]
+    return layer.objects.map((tile) => ({
       name: tile.name as EnemyName,
       x: tile.x as number,
       y: tile.y as number,

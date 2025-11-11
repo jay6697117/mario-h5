@@ -50,7 +50,7 @@ export class Fire implements Power {
     // 改变人物的动画
     player.animSuffix = 'Fire'
     // 监听键盘事件发射火球
-    player.scene.input.keyboard.on(this.key, this.handleKeydown, player)
+    player.scene.input.keyboard?.on(this.key, this.handleKeydown, player)
   }
 
   public overlapEnemy(player: Player, enemy: Enemy, stepOnEnemy: boolean) {
@@ -71,11 +71,12 @@ export class Fire implements Power {
       if (Math.abs(fireBall.x) > maxX || Math.abs(fireBall.y) > maxY) {
         fireBall.setVisible(false).setActive(false)
       }
+      return null
     })
   }
 
   public beforeRemove(player: Player) {
-    player.scene.input.keyboard.removeListener(this.key, this.handleKeydown, player)
+    player.scene.input.keyboard?.removeListener(this.key, this.handleKeydown, player)
     player.scene.physics.world.removeCollider(this.worldCollider)
     player.scene.physics.world.removeCollider(this.enemyCollider)
   }

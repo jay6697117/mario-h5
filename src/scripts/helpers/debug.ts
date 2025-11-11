@@ -6,12 +6,12 @@ interface Config {
 
 export default class Debug {
   private debugGraphics: Phaser.GameObjects.Graphics
-  private showDebug: boolean
+  private showDebug: boolean = false
 
   constructor({ scene, key = 'keydown-C', layer }: Config) {
     this.debugGraphics = scene.add.graphics()
 
-    scene.input.keyboard.on(key, () => {
+    scene.input.keyboard?.on(key, () => {
       this.showDebug = !this.showDebug
       this.draw(layer)
     })
