@@ -11,6 +11,7 @@ const prod = {
     chunkFilename: '[name].[contenthash].chunk.js'
   },
   optimization: {
+    runtimeChunk: 'single',
     splitChunks: {
       cacheGroups: {
         commons: {
@@ -18,6 +19,9 @@ const prod = {
         }
       }
     }
+  },
+  performance: {
+    assetFilter: (filename) => /\.(js|css)$/.test(filename)
   },
   plugins: [
     new CleanWebpackPlugin({ cleanOnceBeforeBuildPatterns: [path.resolve(__dirname, '../dist/*.js')] }),

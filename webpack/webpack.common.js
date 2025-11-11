@@ -10,6 +10,9 @@ module.exports = {
     filename: '[name].bundle.js',
     chunkFilename: '[name].chunk.js'
   },
+  externals: {
+    phaser: 'Phaser'
+  },
   resolve: {
     extensions: ['.ts', '.tsx', '.js']
   },
