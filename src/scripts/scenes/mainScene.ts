@@ -69,8 +69,17 @@ export default class MainScene extends Phaser.Scene {
     this.music = this.sound.add('overworld')
     this.music.play({ loop: true })
 
-    // 添加游戏背景
-    this.add.tileSprite(0, 0, worldLayer.width, 500, 'background-clouds')
+    // 远/近两层云（视差 + 轻微漂浮）
+    const cloudsFar = this.add
+      .tileSprite(0, 10, worldLayer.width, 120, 'background-clouds')
+      .setOrigin(0, 0)
+      .setScrollFactor(0.2, 0)
+    const cloudsNear = this.add
+      .tileSprite(0, 40, worldLayer.width, 140, 'background-clouds')
+      .setOrigin(0, 0)
+      .setScrollFactor(0.5, 0)
+    this.tweens.add({ targets: cloudsFar, y: '+=3', duration: 2500, yoyo: true, repeat: -1, ease: 'sine.inOut' })
+    this.tweens.add({ targets: cloudsNear, y: '+=4', duration: 2200, yoyo: true, repeat: -1, ease: 'sine.inOut' })
 
     // 添加游戏说明（中文，缩小且略微透明，避免干扰）
     this.add
@@ -153,7 +162,9 @@ export default class MainScene extends Phaser.Scene {
 
     const camera = this.cameras.main
     const room = this.rooms.room1
-    camera.setBounds(room.x, room.y, room.width, room.height).startFollow(this.mario)
+    camera.setBounds(room.x, room.y, room.width, room.height)
+    camera.startFollow(this.mario, true, 0.1, 0.1)
+    camera.setDeadzone(120, 60)
     camera.roundPixels = true
     // 初始缩放以适配屏幕（使用整数缩放避免像素模糊）
     camera.setZoom(1)

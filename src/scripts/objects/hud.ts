@@ -45,7 +45,19 @@ export default class Hud {
    * @param value 正数增加、负数减少
    */
   public incDec(key: string, value: number) {
-    this[key].value = Number(this[key].value) + value
+    const header: HeaderText = this[key]
+    header.value = String(Number(header.value) + value)
+    // 数值变化时做轻微弹动
+    const s0 = header.scaleX
+    header.setScale(s0)
+    header.scene.tweens.add({
+      targets: header,
+      scaleX: s0 * 1.12,
+      scaleY: s0 * 1.12,
+      duration: 100,
+      yoyo: true,
+      ease: 'sine.out',
+    })
   }
 
   /**

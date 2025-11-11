@@ -35,6 +35,12 @@ export default class CoinSpin extends Phaser.GameObjects.Sprite {
       y: this.y - 50,
       duration: 300,
       onComplete: () => {
+        // 浮动+1提示
+        const tip = this.scene.add
+          .text(this.x, this.y - 60, '+1', { fontFamily: 'sans-serif', fontSize: '12px', color: '#FFFFFF' })
+          .setOrigin(0.5)
+          .setScrollFactor(0)
+        this.scene.tweens.add({ targets: tip, y: tip.y - 16, alpha: 0, duration: 600, ease: 'sine.out', onComplete: () => tip.destroy() })
         this.destroy()
       },
     })

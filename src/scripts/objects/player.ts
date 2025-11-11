@@ -38,6 +38,18 @@ export default class Player extends Phaser.GameObjects.Sprite {
    */
   private lastSafePos: { x: number; y: number }
   private reviveProtectTimer?: Phaser.Time.TimerEvent
+  private wasOnGround = false
+  private static ensureDustTexture(scene: Phaser.Scene) {
+    const key = 'dust'
+    if (!scene.textures.exists(key)) {
+      const g = scene.make.graphics({ x: 0, y: 0, add: false })
+      g.fillStyle(0xffffff, 0.9)
+      g.fillCircle(3, 3, 3)
+      g.generateTexture(key, 6, 6)
+      g.destroy()
+    }
+    return key
+  }
 
   /**
    * 确保用于复活粒子的贴图已生成
@@ -196,6 +208,17 @@ export default class Player extends Phaser.GameObjects.Sprite {
     if (this.body.blocked?.down) {
       this.lastSafePos = { x: this.x, y: this.y }
     }
+    // 落地瞬间：尘土 + 挤压
+    const onGround = !!this.body.blocked?.down
+    if (onGround && !this.wasOnGround) {
+      this.scene.tweens.add({ targets: this, scaleX: 1.05, scaleY: 0.95, duration: 80, yoyo: true, ease: 'quad.out' })
+      const key = Player.ensureDustTexture(this.scene)
+      const pm = this.scene.add.particles(key)
+      const emitter = pm.createEmitter({ lifespan: 350, speed: { min: 40, max: 90 }, quantity: 0, gravityY: 200, angle: { min: 220, max: 320 }, scale: { start: 1, end: 0 }, })
+      emitter.explode(10, this.x, this.y + 6)
+      this.scene.time.delayedCall(400, () => pm.destroy())
+    }
+    this.wasOnGround = onGround
 
     // 如果不在地图的可视范围内则死亡
     if (this.x < 0 || this.y > this.scene.sys.game.canvas.height) {
