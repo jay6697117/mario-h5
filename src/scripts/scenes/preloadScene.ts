@@ -4,14 +4,29 @@ export default class PreloadScene extends Phaser.Scene {
   }
 
   preload() {
+    // 延迟显示的进度条：加载极快时不显示，避免白条闪烁
     const progress = this.add.graphics()
+      .setScrollFactor(0, 0)
+      .setDepth(1000)
+      .setVisible(false)
+
+    // 200ms 后再显示进度条（若加载很快会在 complete 前被销毁，从而不显示）
+    const timer = this.time.delayedCall(200, () => progress.setVisible(true))
 
     this.load.on('progress', (value: number) => {
+      if (!progress.visible) return
+      const { width, height } = this.scale.gameSize
       progress.clear()
       progress.fillStyle(0xffffff, 1)
-      progress.fillRect(0, Number(this.sys.game.config.height) / 2, Number(this.sys.game.config.width) * value, 20)
+      // 居中且相对尺寸，避免因缩放模式不同出现拉伸或越界
+      const barW = Math.floor(width * 0.6)
+      const barH = 10
+      const x = Math.floor((width - barW) / 2)
+      const y = Math.floor(height * 0.6)
+      progress.fillRect(x, y, Math.max(1, Math.floor(barW * value)), barH)
     })
-    this.load.on('complete', () => {
+    this.load.once('complete', () => {
+      if (timer && timer.getProgress() < 1) timer.remove(false)
       progress.destroy()
     })
 
