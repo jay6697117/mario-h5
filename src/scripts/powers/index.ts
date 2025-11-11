@@ -1,5 +1,6 @@
 import Player from '../objects/player'
-import { Enemy, Turtle } from '../objects/enemies'
+import { Enemy } from '../objects/enemies'
+import type { Turtle } from '../objects/enemies/turtle'
 
 import { Jump } from './jump'
 import { Move } from './move'

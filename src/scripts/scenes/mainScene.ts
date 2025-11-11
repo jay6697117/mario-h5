@@ -288,7 +288,7 @@ export default class MainScene extends Phaser.Scene {
         import(/* webpackChunkName: "powerup-star" */ '../objects/powerUps/star').then(({ Star }) => {
           const powerUp = new Star({ scene: this, x, y, texture }).overlap(
             mario,
-            () => mario.powers.add(Invincible, () => new Invincible(mario))
+            () => mario.powers.add(Invincible, () => new Invincible())
           )
           this.powerUpGroup.add(powerUp)
         })

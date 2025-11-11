@@ -12,7 +12,8 @@
     "strictPropertyInitialization": false,
     "lib": ["dom", "es5", "esnext"],
     "skipLibCheck": true,
-    "types": []
+    "types": [],
+    "typeRoots": ["node_modules/@types", "node_modules/tsyringe/dist/typings"]
   },
   "files": [
     "node_modules/phaser/types/phaser.d.ts"
