@@ -41,6 +41,15 @@ export default class PreloadScene extends Phaser.Scene {
   }
 
   create() {
-    this.scene.start('MainScene')
+    // 动态加载 MainScene，按需分包，降低首屏体积
+    import(/* webpackChunkName: "main-scene" */ './mainScene')
+      .then(({ default: MainScene }) => {
+        this.scene.add('MainScene', MainScene, true)
+      })
+      .catch((err) => {
+        // 加载失败时可回退或提示
+        // eslint-disable-next-line no-console
+        console.error('加载 MainScene 失败', err)
+      })
   }
 }

@@ -13,11 +13,7 @@ const prod = {
   optimization: {
     runtimeChunk: 'single',
     splitChunks: {
-      cacheGroups: {
-        commons: {
-          filename: '[name].[contenthash].bundle.js'
-        }
-      }
+      // 使用默认文件名规则（output.filename/chunkFilename），避免与按需加载冲突
     }
   },
   performance: {
