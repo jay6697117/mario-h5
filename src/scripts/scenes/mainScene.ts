@@ -29,6 +29,8 @@ export default class MainScene extends Phaser.Scene {
   enemyGroup: EnemyGroup
   rooms: rooms = {}
   dests: dests = {}
+  private baseWidth = 400
+  private baseHeight = 240
 
   constructor() {
     super({ key: 'MainScene' })
@@ -150,6 +152,10 @@ export default class MainScene extends Phaser.Scene {
     const room = this.rooms.room1
     camera.setBounds(room.x, room.y, room.width, room.height).startFollow(this.mario)
     camera.roundPixels = true
+    // 初始缩放以适配屏幕（使用整数缩放避免像素模糊）
+    const z0 = this.computeZoom(this.scale.gameSize.width, this.scale.gameSize.height)
+    camera.setZoom(z0)
+    this.hud.layout(this.scale.gameSize.width, z0)
 
     this.physics.add.collider(this.powerUpGroup, worldLayer)
     // @ts-ignore
@@ -353,7 +359,14 @@ export default class MainScene extends Phaser.Scene {
   private onResize(gameSize: Phaser.Structs.Size) {
     const width = gameSize.width
     const height = gameSize.height
+    const zoom = this.computeZoom(width, height)
     this.cameras.resize(width, height)
-    this.hud.layout(width)
+    this.cameras.main.setZoom(zoom)
+    this.hud.layout(width, zoom)
+  }
+
+  private computeZoom(w: number, h: number) {
+    const z = Math.min(w / this.baseWidth, h / this.baseHeight)
+    return Math.max(1, Math.floor(z))
   }
 }

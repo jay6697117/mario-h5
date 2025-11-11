@@ -51,11 +51,15 @@ export default class Hud {
   /**
    * 根据画布宽度重新布局 HUD（在窗口尺寸变化时调用）
    */
-  public layout(width?: number) {
+  public layout(width?: number, zoom: number = 1) {
     const w = width ?? this.scene.sys.game.canvas.width
     const itemWidth = w / this.items.length
+    const uiScale = Math.max(1, Math.floor(zoom))
     this.items.forEach((item, index) => {
-      this[item.key].x = itemWidth * index || 16
+      const text = this[item.key] as HeaderText
+      text.x = itemWidth * index || 16
+      text.y = 8 * uiScale
+      text.setScale(uiScale)
     })
   }
 }
