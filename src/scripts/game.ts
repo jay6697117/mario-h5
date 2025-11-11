@@ -13,8 +13,8 @@ const config: Phaser.Types.Core.GameConfig = {
   },
   scale: {
     parent: 'phaser-game',
-    // 使用 RESIZE 自适应，无裁剪
-    mode: Phaser.Scale.RESIZE,
+    // 使用 ENVELOP：铺满屏幕（高度沾满），按比例缩放，可能轻微裁剪
+    mode: Phaser.Scale.ENVELOP,
     autoCenter: Phaser.Scale.CENTER_BOTH,
     width: DEFAULT_WIDTH,
     height: DEFAULT_HEIGHT,
