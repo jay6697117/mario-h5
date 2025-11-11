@@ -53,11 +53,13 @@ export default class Hud {
    */
   public layout(width?: number, zoom: number = 1) {
     const w = width ?? this.scene.sys.game.canvas.width
-    const itemWidth = w / this.items.length
     const uiScale = Math.max(1, Math.floor(zoom))
+    // 更合理的分布：靠左、偏左、中间、偏右、靠右
+    const slots = [0.02, 0.22, 0.50, 0.78, 0.94]
     this.items.forEach((item, index) => {
       const text = this[item.key] as HeaderText
-      text.x = itemWidth * index || 16
+      const px = Math.round(w * (slots[index] ?? (index / this.items.length)))
+      text.x = index === 0 ? Math.max(8 * uiScale, px) : px
       text.y = 8 * uiScale
       text.setScale(uiScale)
     })
