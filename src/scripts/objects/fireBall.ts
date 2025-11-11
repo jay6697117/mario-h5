@@ -56,18 +56,20 @@ export default class FireBall extends Phaser.Physics.Arcade.Sprite {
     })
 
     // 尾迹粒子（加色）
-    const ptex = FireBall.ensureSparkTexture(scene)
-    this.pm = scene.add.particles(ptex)
-    this.trail = this.pm.createEmitter({
-      follow: this as any,
-      lifespan: 300,
-      frequency: 30,
-      alpha: { start: 0.9, end: 0 },
-      scale: { start: 1, end: 0 },
-      speed: { min: 10, max: 40 },
-      blendMode: 'ADD' as any,
-      quantity: 1,
-    })
+    if (cfg.fx?.trails) {
+      const ptex = FireBall.ensureSparkTexture(scene)
+      this.pm = scene.add.particles(ptex)
+      this.trail = this.pm.createEmitter({
+        follow: this as any,
+        lifespan: 300,
+        frequency: 30,
+        alpha: { start: 0.9, end: 0 },
+        scale: { start: 1, end: 0 },
+        speed: { min: 10, max: 40 },
+        blendMode: 'ADD' as any,
+        quantity: 1,
+      })
+    }
   }
 
   /**
@@ -108,3 +110,4 @@ export default class FireBall extends Phaser.Physics.Arcade.Sprite {
     })
   }
 }
+import cfg from '../config'

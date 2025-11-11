@@ -56,6 +56,9 @@ export default class Brick extends Phaser.GameObjects.Rectangle {
     this.blockEmitter.emitParticle(6, tile.x * 16, tile.y * 16)
     this.scene.sound.playAudioSprite('sfx', 'smb_breakblock')
     // 轻微震屏提升打击感
-    this.scene.cameras.main.shake(120, 0.003)
+    // 延用配置开关
+    import('../config').then((m: any) => {
+      if (!m.default.fx || m.default.fx.cameraShake) this.scene.cameras.main.shake(120, 0.003)
+    }).catch(() => this.scene.cameras.main.shake(120, 0.003))
   }
 }

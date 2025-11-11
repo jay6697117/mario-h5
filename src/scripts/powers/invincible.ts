@@ -1,5 +1,6 @@
 import { Enemy } from '../objects/enemies'
 import { Power, TargetObject } from './index'
+import cfg from '../config'
 
 /**
  * 无敌的能力
@@ -55,7 +56,7 @@ export class Invincible implements Power {
 
   public update(time: number, delta: number, targetObject: TargetObject) {
     // 星星拖尾
-    if (!this.pm) {
+    if (cfg.fx?.trails && !this.pm) {
       const key = this.ensureStarTexture(targetObject.scene)
       this.pm = targetObject.scene.add.particles(key)
       this.trail = this.pm.createEmitter({
@@ -87,7 +88,7 @@ export class Invincible implements Power {
 
   public beforeRemove(targetObject: TargetObject) {
     targetObject.setTint(this.tints[0])
-    this.trail?.stop()
-    targetObject.scene.time.delayedCall(500, () => this.pm?.destroy())
+    if (this.trail) this.trail.stop()
+    if (this.pm) targetObject.scene.time.delayedCall(500, () => this.pm?.destroy())
   }
 }

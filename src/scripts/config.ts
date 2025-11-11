@@ -19,4 +19,11 @@ export default {
    * 游戏说明
    */
   helpText: '移动：WASD / 方向键\n跳跃：空格 / 上键\n开火：B',
+  fx: {
+    vignette: true,
+    outline: true,
+    parallax: true,
+    cameraShake: true,
+    trails: true,
+  },
 }

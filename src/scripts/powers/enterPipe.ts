@@ -19,17 +19,26 @@ export class EnterPipe implements Power {
     const properties = tile.properties
 
     if (properties?.dest && this.cursors[properties.direction].isDown) {
-      // 进入管道动画
-      this.pipeAnimation(player, properties.direction, () => {
-        // 移动到对应目的地
-        const { x, y, direction } = this.dests[properties.dest]
-        this.moveTo(player, x + player.width, y + player.height / 2)
-        if (direction) {
-          // 出管道动画
-          this.pipeAnimation(player, direction)
+      this.transfer(player, properties.direction, this.dests[properties.dest])
+    }
+  }
+
+  /**
+   * 进入管道 -> 淡出 -> 瞬移到目的地 -> 淡入 -> 出管道
+   */
+  private transfer(player: Player, enterDir: string, dest: { x: number; y: number; direction?: string }) {
+    // 进入管道动画
+    this.pipeAnimation(player, enterDir, () => {
+      const cam = player.scene.cameras.main
+      cam.fadeOut(180, 0, 0, 0)
+      cam.once('camerafadeoutcomplete', () => {
+        this.moveTo(player, dest.x + player.width, dest.y + player.height / 2)
+        cam.fadeIn(180, 0, 0, 0)
+        if (dest.direction) {
+          this.pipeAnimation(player, dest.direction)
         }
       })
-    }
+    })
   }
 
   /**

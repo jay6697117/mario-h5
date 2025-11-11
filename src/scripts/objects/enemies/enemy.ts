@@ -1,5 +1,6 @@
 import Player from '../player'
 import { score } from '../../helpers/decorators'
+import cfg from '../../config'
 
 export class Enemy extends Phaser.Physics.Arcade.Sprite {
   body: Phaser.Physics.Arcade.Body
@@ -63,7 +64,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     this.dead = true
     this.scene.sound.playAudioSprite('sfx', 'smb_stomp')
     // 轻微震屏
-    this.scene.cameras.main.shake(80, 0.002)
+    if (!cfg.fx || cfg.fx.cameraShake) this.scene.cameras.main.shake(80, 0.002)
 
     if (flipY) {
       this.body.checkCollision.none = true

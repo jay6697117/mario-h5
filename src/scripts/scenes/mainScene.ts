@@ -43,10 +43,9 @@ export default class MainScene extends Phaser.Scene {
     const map = this.make.tilemap({ key: 'map' })
     // WebGL 后期与描边管线注册
     const isWebGL = (this.game.renderer as any).pipelines !== undefined
-    if (isWebGL) {
+    if (isWebGL && config.fx?.vignette) {
       try {
         (this.game.renderer as any).addPipeline('Vignette', new VignettePipeline(this.game))
-        (this.game.renderer as any).addPipeline('Outline', new OutlinePipeline(this.game))
         this.cameras.main.setPostPipeline('Vignette')
       } catch (e) {
         // 忽略重复注册
@@ -82,17 +81,21 @@ export default class MainScene extends Phaser.Scene {
     this.music = this.sound.add('overworld')
     this.music.play({ loop: true })
 
-    // 远/近两层云（视差 + 轻微漂浮）
-    const cloudsFar = this.add
-      .tileSprite(0, 10, worldLayer.width, 120, 'background-clouds')
-      .setOrigin(0, 0)
-      .setScrollFactor(0.2, 0)
-    const cloudsNear = this.add
-      .tileSprite(0, 40, worldLayer.width, 140, 'background-clouds')
-      .setOrigin(0, 0)
-      .setScrollFactor(0.5, 0)
-    this.tweens.add({ targets: cloudsFar, y: '+=3', duration: 2500, yoyo: true, repeat: -1, ease: 'sine.inOut' })
-    this.tweens.add({ targets: cloudsNear, y: '+=4', duration: 2200, yoyo: true, repeat: -1, ease: 'sine.inOut' })
+    // 远/近两层云（视差 + 轻微漂浮）或单层云
+    if (config.fx?.parallax) {
+      const cloudsFar = this.add
+        .tileSprite(0, 10, worldLayer.width, 120, 'background-clouds')
+        .setOrigin(0, 0)
+        .setScrollFactor(0.2, 0)
+      const cloudsNear = this.add
+        .tileSprite(0, 40, worldLayer.width, 140, 'background-clouds')
+        .setOrigin(0, 0)
+        .setScrollFactor(0.5, 0)
+      this.tweens.add({ targets: cloudsFar, y: '+=3', duration: 2500, yoyo: true, repeat: -1, ease: 'sine.inOut' })
+      this.tweens.add({ targets: cloudsNear, y: '+=4', duration: 2200, yoyo: true, repeat: -1, ease: 'sine.inOut' })
+    } else {
+      this.add.tileSprite(0, 0, worldLayer.width, 120, 'background-clouds').setOrigin(0, 0)
+    }
 
     // 添加游戏说明（中文，缩小且略微透明，避免干扰）
     const help = this.add
@@ -139,7 +142,7 @@ export default class MainScene extends Phaser.Scene {
         if (!this.music.isPlaying) this.music.play({ loop: true })
       })
     })
-    if (isWebGL) {
+    if (isWebGL && config.fx?.outline) {
       try { (this.mario as any).setPostPipeline('Outline') } catch (e) {}
     }
 
