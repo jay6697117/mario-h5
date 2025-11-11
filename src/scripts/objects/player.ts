@@ -43,13 +43,29 @@ export default class Player extends Phaser.GameObjects.Sprite {
    * 确保用于复活粒子的贴图已生成
    */
   private static ensureRespawnTexture(scene: Phaser.Scene) {
-    const key = 'respawn-spark'
+    const key = 'respawn-star'
     if (!scene.textures.exists(key)) {
+      const size = 16
+      const cx = size / 2
+      const cy = size / 2
+      const outer = size / 2 - 1
+      const inner = Math.max(2, Math.floor(outer * 0.45))
       const g = scene.make.graphics({ x: 0, y: 0, add: false })
-      g.fillStyle(0xffffff, 1)
-      // 简单的像素风圆点
-      g.fillCircle(4, 4, 4)
-      g.generateTexture(key, 8, 8)
+      g.clear()
+      g.fillStyle(0xfff27a, 1)
+
+      const points: { x: number; y: number }[] = []
+      let rot = -Math.PI / 2
+      const spikes = 5
+      const step = Math.PI / spikes
+      for (let i = 0; i < spikes; i++) {
+        points.push({ x: cx + Math.cos(rot) * outer, y: cy + Math.sin(rot) * outer })
+        rot += step
+        points.push({ x: cx + Math.cos(rot) * inner, y: cy + Math.sin(rot) * inner })
+        rot += step
+      }
+      g.fillPoints(points as any, true)
+      g.generateTexture(key, size, size)
       g.destroy()
     }
     return key
