@@ -220,8 +220,9 @@ export default class Player extends Phaser.GameObjects.Sprite {
     }
     this.wasOnGround = onGround
 
-    // 如果不在地图的可视范围内则死亡
-    if (this.x < 0 || this.y > this.scene.sys.game.canvas.height) {
+    // 仅在跌出物理世界底部时判定死亡（避免在起点靠左时误判）
+    const worldBounds = this.scene.physics.world.bounds
+    if (this.y > worldBounds.bottom + 16) {
       this.die()
     }
   }

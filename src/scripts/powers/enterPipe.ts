@@ -87,7 +87,9 @@ export class EnterPipe implements Power {
       .sort((a, b) => a.x - b.x)
       .some((room) => {
         if (x < room.x + room.width) {
+          // 更新相机与物理世界边界，以保持跌出底部判定与视口一致
           player.scene.cameras.main.setBounds(room.x, room.y, room.width, room.height)
+          player.scene.physics.world.setBounds(room.x, room.y, room.width, room.height)
           return true
         }
       })

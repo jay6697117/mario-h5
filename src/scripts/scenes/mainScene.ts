@@ -187,6 +187,8 @@ export default class MainScene extends Phaser.Scene {
     const camera = this.cameras.main
     const room = this.rooms.room1
     camera.setBounds(room.x, room.y, room.width, room.height)
+    // 同步设置物理世界边界，供玩家跌出底部判定使用
+    this.physics.world.setBounds(room.x, room.y, room.width, room.height)
     camera.startFollow(this.mario, true, 0.1, 0.1)
     camera.setDeadzone(120, 60)
     camera.roundPixels = true
