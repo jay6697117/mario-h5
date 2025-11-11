@@ -1,33 +1,58 @@
 export default class PreloadScene extends Phaser.Scene {
+  private loading?: {
+    overlay: Phaser.GameObjects.Container
+    mask: Phaser.GameObjects.Rectangle
+    spinner: Phaser.GameObjects.Rectangle
+    text: Phaser.GameObjects.Text
+  }
   constructor() {
     super({ key: 'PreloadScene' })
   }
 
   preload() {
-    // 延迟显示的进度条：加载极快时不显示，避免白条闪烁
-    const progress = this.add.graphics()
+    // 全屏 Loading 覆盖层（延迟显示，避免闪烁）
+    const { width, height } = this.scale.gameSize
+    const overlay = this.add.container(0, 0).setDepth(10000).setScrollFactor(0, 0)
+    const mask = this.add
+      .rectangle(0, 0, width, height, 0x000000, 0.35)
+      .setOrigin(0, 0)
       .setScrollFactor(0, 0)
-      .setDepth(1000)
-      .setVisible(false)
+    const spinner = this.add
+      .rectangle(width / 2, height / 2, 24, 24, 0xffffff)
+      .setOrigin(0.5)
+      .setScrollFactor(0, 0)
+    const text = this.add
+      .text(width / 2, height / 2 + 36, '加载中… 0%', {
+        fontFamily: 'sans-serif',
+        fontSize: '18px',
+        color: '#FFFFFF',
+      })
+      .setOrigin(0.5)
+      .setScrollFactor(0, 0)
 
-    // 200ms 后再显示进度条（若加载很快会在 complete 前被销毁，从而不显示）
-    const timer = this.time.delayedCall(200, () => progress.setVisible(true))
+    overlay.add([mask, spinner, text])
+    overlay.setVisible(false)
+
+    // 旋转动画
+    this.tweens.add({ targets: spinner, angle: 360, duration: 900, repeat: -1, ease: 'Linear' })
+
+    // 保存引用并监听窗口变化以重排
+    this.loading = { overlay, mask, spinner, text }
+    const layout = () => this.layoutLoading()
+    this.scale.on('resize', layout)
+
+    // 延迟显示，避免极快加载时闪现
+    const timer = this.time.delayedCall(200, () => overlay.setVisible(true))
 
     this.load.on('progress', (value: number) => {
-      if (!progress.visible) return
-      const { width, height } = this.scale.gameSize
-      progress.clear()
-      progress.fillStyle(0xffffff, 1)
-      // 居中且相对尺寸，避免因缩放模式不同出现拉伸或越界
-      const barW = Math.floor(width * 0.6)
-      const barH = 10
-      const x = Math.floor((width - barW) / 2)
-      const y = Math.floor(height * 0.6)
-      progress.fillRect(x, y, Math.max(1, Math.floor(barW * value)), barH)
+      if (!overlay.visible) return
+      text.setText(`加载中… ${Math.round(value * 100)}%`)
     })
     this.load.once('complete', () => {
       if (timer && timer.getProgress() < 1) timer.remove(false)
-      progress.destroy()
+      this.scale.off('resize', layout)
+      overlay.destroy()
+      this.loading = undefined
     })
 
     // 背景
@@ -66,5 +91,18 @@ export default class PreloadScene extends Phaser.Scene {
         // eslint-disable-next-line no-console
         console.error('加载 MainScene 失败', err)
       })
+  }
+
+  /**
+   * 重排全屏 loading 覆盖层
+   */
+  private layoutLoading() {
+    if (!this.loading) return
+    const { width, height } = this.scale.gameSize
+    const { overlay, mask, spinner, text } = this.loading
+    overlay.setPosition(0, 0)
+    mask.setSize(width, height)
+    spinner.setPosition(width / 2, height / 2)
+    text.setPosition(width / 2, height / 2 + 36)
   }
 }
