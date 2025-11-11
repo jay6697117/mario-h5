@@ -63,6 +63,8 @@ export class HeaderText extends Phaser.GameObjects.BitmapText {
   }
 
   public update() {
-    this.setText(`${this.title}\n${this.value}`)
+    const v: any = this.value as any
+    const display = v === Infinity || v === 'Infinity' ? '∞' : String(v)
+    this.setText(`${this.title}\n${display}`)
   }
 }

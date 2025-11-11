@@ -9,7 +9,7 @@ export default {
   /**
    * 玩家生命数
    */
-  lives: 3,
+  lives: Infinity,
   /**
    * 玩家初始位置
    */
