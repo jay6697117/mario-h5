@@ -72,8 +72,12 @@ export default class MainScene extends Phaser.Scene {
     // 添加游戏背景
     this.add.tileSprite(0, 0, worldLayer.width, 500, 'background-clouds')
 
-    // 添加游戏说明
-    this.add.bitmapText(16, 100, 'font', config.helpText, 8).setDepth(100)
+    // 添加游戏说明（中文，使用普通文本以支持中文字符）
+    this.add
+      .text(16, 96, config.helpText, { fontFamily: 'sans-serif', fontSize: '16px', color: '#FFFFFF' })
+      .setLineSpacing(6)
+      .setDepth(100)
+      .setScrollFactor(0, 0)
 
     // tile 动画
     this.animatedTiles = new AnimatedTiles(map, tileset!)
