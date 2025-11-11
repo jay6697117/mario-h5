@@ -9,7 +9,7 @@ import Brick from '../objects/brick'
 import CoinSpin from '../objects/coinSpin'
 import Flag from '../objects/flag'
 import { Enemy, EnemyGroup, EnemyName } from '../objects/enemies'
-import { PowerUpGroup, Mushroom, Flower, Star } from '../objects/powerUps'
+import { PowerUpGroup } from '../objects/powerUps'
 
 import { Move, Jump, Large, Fire, Invincible, EnterPipe, HitBrick } from '../powers'
 import { arrayProps2ObjProps } from '../utils'
@@ -261,29 +261,51 @@ export default class MainScene extends Phaser.Scene {
    */
   private createPowerUp(name: string, x: number, y: number) {
     const mario = this.mario
-    let params: any[] = []
+    const texture = 'atlas'
 
     switch (name) {
-      case 'mushroom':
-        params = mario.powers.has(Large) ? [Flower, Fire] : [Mushroom, Large, { type: 'super' }]
+      case 'mushroom': {
+        if (mario.powers.has(Large)) {
+          import(/* webpackChunkName: "powerup-flower" */ '../objects/powerUps/flower').then(({ Flower }) => {
+            const powerUp = new Flower({ scene: this, x, y, texture }).overlap(
+              mario,
+              () => mario.powers.add(Fire, () => new Fire(mario))
+            )
+            this.powerUpGroup.add(powerUp)
+          })
+        } else {
+          import(/* webpackChunkName: "powerup-mushroom" */ '../objects/powerUps/mushroom').then(({ Mushroom }) => {
+            const powerUp = new Mushroom({ scene: this, x, y, texture, type: 'super' } as any).overlap(
+              mario,
+              () => mario.powers.add(Large, () => new Large(mario))
+            )
+            this.powerUpGroup.add(powerUp)
+          })
+        }
         break
-      case 'star':
-        params = [Star, Invincible]
+      }
+      case 'star': {
+        import(/* webpackChunkName: "powerup-star" */ '../objects/powerUps/star').then(({ Star }) => {
+          const powerUp = new Star({ scene: this, x, y, texture }).overlap(
+            mario,
+            () => mario.powers.add(Invincible, () => new Invincible(mario))
+          )
+          this.powerUpGroup.add(powerUp)
+        })
         break
-      case '1up':
-        params = [Mushroom, null, { type: '1up' }, () => this.hud.incDec('lives', 1)]
+      }
+      case '1up': {
+        import(/* webpackChunkName: "powerup-mushroom" */ '../objects/powerUps/mushroom').then(({ Mushroom }) => {
+          const powerUp = new Mushroom({ scene: this, x, y, texture, type: '1up' } as any).overlap(
+            mario,
+            () => this.hud.incDec('lives', 1)
+          )
+          this.powerUpGroup.add(powerUp)
+        })
         break
+      }
       default:
-        new CoinSpin(this, x, y, 'atlas').spin()
-    }
-
-    const [PowerUp, Power, options, onOverlap] = params
-    if (PowerUp) {
-      const powerUp = new PowerUp({ scene: this, x, y, texture: 'atlas', ...options }).overlap(
-        mario,
-        onOverlap || (() => mario.powers.add(Power, () => new Power(mario)))
-      )
-      this.powerUpGroup.add(powerUp)
+        new CoinSpin(this, x, y, texture).spin()
     }
   }
 

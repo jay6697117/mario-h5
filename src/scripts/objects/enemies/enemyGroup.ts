@@ -1,5 +1,5 @@
 import Player from '../player'
-import { Enemy, Goomba, Turtle } from './index'
+import type { Enemy } from './enemy'
 import { removeArrayMember } from '../../utils'
 
 export type EnemyName = 'goomba' | 'turtle'
@@ -31,6 +31,9 @@ export class EnemyGroup extends Phaser.GameObjects.Group {
    */
   private maxY = 500
 
+  private loaders: Partial<Record<EnemyName, Promise<void>>> = {}
+  private classes: Partial<Record<EnemyName, new (cfg: { scene: Phaser.Scene; x: number; y: number; texture: string }) => Enemy>> = {}
+
   constructor(scene: Phaser.Scene, enemiesData: EnemyData[] = []) {
     super(scene)
     this.enemiesData = enemiesData
@@ -53,19 +56,35 @@ export class EnemyGroup extends Phaser.GameObjects.Group {
       enemy.restore(x, y)
       this.add(enemy)
       this.pool.splice(this.pool.indexOf(enemy), 1)
-    } else {
-      switch (name) {
-        case 'goomba':
-          enemy = new Goomba({ scene: this.scene, x, y, texture: 'atlas' })
-          break
-        case 'turtle':
-          enemy = new Turtle({ scene: this.scene, x, y, texture: 'atlas' })
-          break
-      }
-      this.add(enemy)
+      return enemy
     }
 
-    return enemy
+    const Klass = this.classes[name]
+    if (Klass) {
+      const inst = new Klass({ scene: this.scene, x, y, texture: 'atlas' })
+      this.add(inst)
+      return inst
+    }
+
+    if (!this.loaders[name]) {
+      this.loaders[name] = (async () => {
+        switch (name) {
+          case 'goomba': {
+            const mod = await import(/* webpackChunkName: "enemy-goomba" */ './goomba')
+            this.classes.goomba = mod.Goomba
+            break
+          }
+          case 'turtle': {
+            const mod = await import(/* webpackChunkName: "enemy-turtle" */ './turtle')
+            this.classes.turtle = mod.Turtle
+            break
+          }
+        }
+      })()
+    }
+
+    // 未加载完成时，返回 undefined，本次不创建
+    return undefined
   }
 
   update(time: number, delta: number, player: Player) {
@@ -76,8 +95,8 @@ export class EnemyGroup extends Phaser.GameObjects.Group {
     // 当玩家与敌人距离小于画布宽度时才创建敌人，创建敌人后删除对应 enemiesData 数组的成员
     removeArrayMember(this.enemiesData, ({ x, y, name }: EnemyData) => {
       if (Math.abs(player.x - x) < canvasWidth) {
-        this.createEnemy(name, x, y)
-        return true
+        const created = this.createEnemy(name, x, y)
+        return !!created
       }
     })
 

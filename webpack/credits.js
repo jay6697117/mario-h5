@@ -1,16 +1,15 @@
 /**
- * PLEASE DO NOT REMOVE THIS NOTICE!
+ * 超级玛丽 Web 版
  *
- * @template        This Phaser game was built using phaser-project-template (https://github.com/yandeu/phaser-project-template)
- * @author          Yannick Deubel (https://github.com/yandeu)
- * @copyright       2019 Yannick Deubel
- * @license         {@link https://github.com/yandeu/phaser-project-template/blob/master/LICENSE|MIT License}
+ * @project         mario-h5 (https://github.com/jay6697117/mario-h5.git)
+ * @author          jay6697117 (https://github.com/jay6697117)
+ * @copyright       2025 jay6697117
+ * @license         {@link https://github.com/jay6697117/mario-h5/blob/master/LICENSE|MIT License}
+ * @template        基于 phaser-project-template 构建
  */
 
-// Of course you can remove it if you really want to, but it would be nice if you would leave it there :)
-
 console.log(
-  '%c %c %c %c %c Built using phaser-project-template %c https://github.com/yandeu/phaser-project-template',
+  '%c %c %c %c %c 超级玛丽 Web 版 %c https://github.com/jay6697117/mario-h5.git',
   'background: #ff0000',
   'background: #ffff00',
   'background: #00ff00',

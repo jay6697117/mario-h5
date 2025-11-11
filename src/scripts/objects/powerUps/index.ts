@@ -1,5 +1,2 @@
 export * from './powerUp'
 export * from './powerUpGroup'
-export * from './flower'
-export * from './mushroom'
-export * from './star'
