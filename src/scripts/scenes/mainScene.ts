@@ -72,12 +72,13 @@ export default class MainScene extends Phaser.Scene {
     // 添加游戏背景
     this.add.tileSprite(0, 0, worldLayer.width, 500, 'background-clouds')
 
-    // 添加游戏说明（中文，使用普通文本以支持中文字符）
+    // 添加游戏说明（中文，缩小且略微透明，避免干扰）
     this.add
-      .text(16, 96, config.helpText, { fontFamily: 'sans-serif', fontSize: '16px', color: '#FFFFFF' })
-      .setLineSpacing(6)
+      .text(12, 72, config.helpText, { fontFamily: 'sans-serif', fontSize: '12px', color: '#FFFFFF' })
+      .setLineSpacing(4)
       .setDepth(100)
       .setScrollFactor(0, 0)
+      .setAlpha(0.6)
 
     // tile 动画
     this.animatedTiles = new AnimatedTiles(map, tileset!)
@@ -105,12 +106,12 @@ export default class MainScene extends Phaser.Scene {
       y: config.initY,
       allowPowers: [Jump, Move, Invincible, Large, Fire, EnterPipe, HitBrick],
     }).on('die', () => {
-      this.time.delayedCall(3000, () => {
-        if (this.hud.getValue('lives') === 0) {
-          this.gameOver()
-        } else {
-          this.restartGame()
-        }
+      // 原地复活（或最近安全点），不重开关卡
+      this.time.delayedCall(1200, () => {
+        const pt = this.mario.getRespawnPoint()
+        this.mario.reviveAt(pt.x, pt.y)
+        // 恢复背景音乐
+        if (!this.music.isPlaying) this.music.play({ loop: true })
       })
     })
 

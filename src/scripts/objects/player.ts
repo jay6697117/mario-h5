@@ -33,6 +33,10 @@ export default class Player extends Phaser.GameObjects.Sprite {
    * 玩家动画 key 后缀
    */
   animSuffix = ''
+  /**
+   * 最近一次安全落地的位置（用于复活）
+   */
+  private lastSafePos: { x: number; y: number }
 
   constructor({ scene, x, y, texture, frame, allowPowers }: Config) {
     super(scene, x, y, texture, frame)
@@ -41,6 +45,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
     this.body.setSize(8, 16)
     this.makeAnimaions()
     this.powers = new PowerManage(this, allowPowers)
+    this.lastSafePos = { x, y }
   }
 
   /**
@@ -154,6 +159,11 @@ export default class Player extends Phaser.GameObjects.Sprite {
 
     this.powers.allowPowers.some((name) => this.powers.get(name)?.update?.(time, delta, this, cursors))
 
+    // 记录最近安全着地位置
+    if (this.body.blocked?.down) {
+      this.lastSafePos = { x: this.x, y: this.y }
+    }
+
     // 如果不在地图的可视范围内则死亡
     if (this.x < 0 || this.y > this.scene.sys.game.canvas.height) {
       this.die()
@@ -172,6 +182,32 @@ export default class Player extends Phaser.GameObjects.Sprite {
     this.body.setAcceleration(0, 0).setVelocity(0, -200)
     this.anims.play('dead')
     this.emit('die')
+  }
+
+  /** 复活（默认在最后安全点） */
+  reviveAt(x?: number, y?: number) {
+    const pos = this.getRespawnPoint()
+    const nx = x ?? pos.x
+    const ny = y ?? pos.y
+    this.dead = false
+    this.body.checkCollision.none = false
+    this.body.setAcceleration(0, 0).setVelocity(0, 0)
+    this.setPosition(nx, ny)
+    this.setAlpha(0.9)
+    this.protected = true
+    this.anims.play('stand' + this.animSuffix, true)
+    // 短暂无敌，避免刚复活立刻再次死亡
+    this.scene.time.delayedCall(1500, () => {
+      this.setAlpha(1)
+      this.protected = false
+    })
+  }
+
+  /** 获取复活位置：若掉出屏幕则返回最近安全点 */
+  getRespawnPoint() {
+    const canvasH = this.scene.sys.game.canvas.height
+    if (this.y > canvasH) return this.lastSafePos
+    return { x: this.x, y: this.y }
   }
 
   /**
