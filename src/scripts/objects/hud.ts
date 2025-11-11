@@ -67,9 +67,9 @@ export default class Hud {
     header.setScale(s0)
     header.scene.tweens.add({
       targets: header,
-      scaleX: s0 * 1.12,
-      scaleY: s0 * 1.12,
-      duration: 100,
+      scaleX: s0 * 1.15,
+      scaleY: s0 * 1.15,
+      duration: 120,
       yoyo: true,
       ease: 'sine.out',
     })

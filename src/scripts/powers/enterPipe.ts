@@ -54,7 +54,7 @@ export class EnterPipe implements Power {
       .body.stop()
 
     player.scene.physics.world.pause()
-    player.scene.sound.playAudioSprite('sfx', 'smb_pipe')
+    player.scene.sound.playAudioSprite('sfx', 'smb_pipe', { rate: 0.95 + Math.random() * 0.1 })
 
     const propMap = {
       down: ['y', 1],

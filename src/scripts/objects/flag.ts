@@ -50,7 +50,7 @@ export default class Flag {
       case 0:
         // @ts-ignore
         player.scene.music.stop()
-        player.scene.sound.playAudioSprite('sfx', 'smb_flagpole')
+        player.scene.sound.playAudioSprite('sfx', 'smb_flagpole', { rate: 0.95 + Math.random() * 0.1 })
         player.scene.physics.world.pause()
 
         // 玩家抓住旗杆往下爬的动画

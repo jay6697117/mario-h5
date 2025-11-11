@@ -67,14 +67,14 @@ export class Turtle extends Enemy {
         const direction = player.x > this.x ? -1 : 1
         this.x += direction * 6
         this.body.setVelocityX(direction * this.shrinkSpeed)
-        this.scene.sound.playAudioSprite('sfx', 'smb_kick')
+        this.scene.sound.playAudioSprite('sfx', 'smb_kick', { rate: 0.95 + Math.random() * 0.1 })
         this.attackPower = true
         this.powers.add(HitBrick, () => new HitBrick(this, ['left', 'right']))
         return true
       }
       // 如果在收缩和移动状态下被玩家踩中，则让乌龟停止移动
       else if (stepOnEnemy) {
-        this.scene.sound.playAudioSprite('sfx', 'smb_stomp')
+        this.scene.sound.playAudioSprite('sfx', 'smb_stomp', { rate: 0.95 + Math.random() * 0.1 })
         this.body.stop()
         this.attackPower = false
       } else {
@@ -84,7 +84,7 @@ export class Turtle extends Enemy {
     // 如果在正常状态下被玩家踩中，则切换为收缩状态
     else if (stepOnEnemy) {
       this.play('turtleShell')
-      this.scene.sound.playAudioSprite('sfx', 'smb_stomp')
+      this.scene.sound.playAudioSprite('sfx', 'smb_stomp', { rate: 0.95 + Math.random() * 0.1 })
       this.body.stop().setSize(16, 16).setOffset(0, 8)
       this.shrink = true
       this.attackPower = false

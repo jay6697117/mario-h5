@@ -54,7 +54,7 @@ export default class Brick extends Phaser.GameObjects.Rectangle {
   public break(tile: Phaser.Tilemaps.Tile) {
     tile.tilemapLayer.removeTileAt(tile.x, tile.y, true, true)
     this.blockEmitter.emitParticle(6, tile.x * 16, tile.y * 16)
-    this.scene.sound.playAudioSprite('sfx', 'smb_breakblock')
+    this.scene.sound.playAudioSprite('sfx', 'smb_breakblock', { rate: 0.95 + Math.random() * 0.1 })
     // 轻微震屏提升打击感
     // 延用配置开关
     import('../config').then((m: any) => {

@@ -62,7 +62,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     if (this.dead) return
 
     this.dead = true
-    this.scene.sound.playAudioSprite('sfx', 'smb_stomp')
+    this.scene.sound.playAudioSprite('sfx', 'smb_stomp', { rate: 0.95 + Math.random() * 0.1 })
     // 轻微震屏
     if (!cfg.fx || cfg.fx.cameraShake) this.scene.cameras.main.shake(80, 0.002)
 

@@ -99,7 +99,7 @@ export default class FireBall extends Phaser.Physics.Arcade.Sprite {
   explode() {
     if (this.isExplode) return
     this.isExplode = true
-    this.scene.sound.playAudioSprite('sfx', 'smb_bump')
+    this.scene.sound.playAudioSprite('sfx', 'smb_bump', { rate: 0.95 + Math.random() * 0.1 })
     this.body.setAllowGravity(false).stop()
     // 停止尾迹，并做一次爆发
     this.trail?.stop()

@@ -81,7 +81,7 @@ export class HitBrick implements Power {
     if (this.target.powers.has(Large) || !this.directions.includes('up')) {
       brick.break(tile)
     } else {
-      this.target.scene.sound.playAudioSprite('sfx', 'smb_bump')
+      this.target.scene.sound.playAudioSprite('sfx', 'smb_bump', { rate: 0.95 + Math.random() * 0.1 })
     }
   }
 

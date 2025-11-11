@@ -72,6 +72,6 @@ export class Large implements Power {
    */
   private toOrigin(player: Player) {
     this.changeSize(player, 'shrink', '', this.originSize)
-    player.scene.sound.playAudioSprite('sfx', 'smb_pipe')
+    player.scene.sound.playAudioSprite('sfx', 'smb_pipe', { rate: 0.95 + Math.random() * 0.1 })
   }
 }

@@ -118,7 +118,7 @@ export class Fire implements Power {
     if (!fireInstance?.launch) {
       fireInstance.launch = true
       fireInstance.createFireBall(player)
-      player.scene.sound.playAudioSprite('sfx', 'smb_fireball')
+      player.scene.sound.playAudioSprite('sfx', 'smb_fireball', { rate: 0.95 + Math.random() * 0.1 })
       player.scene.time.delayedCall(150, () => {
         fireInstance.launch = false
       })

@@ -30,7 +30,7 @@ export class Mushroom extends PowerUp {
 
   @score(1000)
   onOverlap() {
-    this.scene.sound.playAudioSprite('sfx', this.type === '1up' ? 'smb_1-up' : 'smb_powerup')
+    this.scene.sound.playAudioSprite('sfx', this.type === '1up' ? 'smb_1-up' : 'smb_powerup', { rate: 0.95 + Math.random() * 0.1 })
     this.destroy()
   }
 }

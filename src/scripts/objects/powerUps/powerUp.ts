@@ -30,7 +30,7 @@ export class PowerUp extends Phaser.GameObjects.Sprite {
       },
     })
 
-    scene.sound.playAudioSprite('sfx', 'smb_powerup_appears')
+    scene.sound.playAudioSprite('sfx', 'smb_powerup_appears', { rate: 0.95 + Math.random() * 0.1 })
   }
 
   /**
@@ -42,7 +42,7 @@ export class PowerUp extends Phaser.GameObjects.Sprite {
    * 与玩家接触时的回调
    */
   onOverlap(powerUp: PowerUp, player: Player) {
-    this.scene.sound.playAudioSprite('sfx', 'smb_powerup')
+    this.scene.sound.playAudioSprite('sfx', 'smb_powerup', { rate: 0.95 + Math.random() * 0.1 })
     this.destroy()
   }
 

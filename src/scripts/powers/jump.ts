@@ -46,7 +46,7 @@ export class Jump implements Power {
     if (upSpaceDown && bodyBlockedDown) {
       this.jumpTimer = time
       player.body.setVelocityY(vy)
-      player.scene.sound.playAudioSprite('sfx', 'smb_jump-' + (player.powers.has(Large) ? 'super' : 'small'))
+      player.scene.sound.playAudioSprite('sfx', 'smb_jump-' + (player.powers.has(Large) ? 'super' : 'small'), { rate: 0.95 + Math.random() * 0.1 })
     }
     // 已按下跳跃键并处于空中
     else if (upSpaceDown && this.jumpTimer !== 0) {

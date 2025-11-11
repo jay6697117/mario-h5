@@ -233,7 +233,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
   die() {
     this.dead = true
     this.scene.sound.stopAll()
-    this.scene.sound.playAudioSprite('sfx', 'smb_mariodie')
+    this.scene.sound.playAudioSprite('sfx', 'smb_mariodie', { rate: 0.95 + Math.random() * 0.1 })
     this.body.checkCollision.none = true
     this.body.setAcceleration(0, 0).setVelocity(0, -200)
     this.anims.play('dead')

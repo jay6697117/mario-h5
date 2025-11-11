@@ -41,9 +41,11 @@ export default class MainScene extends Phaser.Scene {
     window.__myGame = this
 
     const map = this.make.tilemap({ key: 'map' })
-    // WebGL 后期与描边管线注册
+    // WebGL 后期与描边管线注册（仅桌面端/高性能设备启用）
     const isWebGL = (this.game.renderer as any).pipelines !== undefined
-    if (isWebGL && config.fx?.vignette) {
+    // Phaser 设备检测：仅桌面端默认开启后效，移动端禁用以保性能
+    const isDesktop = (this.sys.game.device as any)?.os?.desktop === true
+    if (isWebGL && isDesktop && config.fx?.vignette) {
       try {
         (this.game.renderer as any).addPipeline('Vignette', new VignettePipeline(this.game))
         this.cameras.main.setPostPipeline('Vignette')
@@ -142,7 +144,7 @@ export default class MainScene extends Phaser.Scene {
         if (!this.music.isPlaying) this.music.play({ loop: true })
       })
     })
-    if (isWebGL && config.fx?.outline) {
+    if (isWebGL && isDesktop && config.fx?.outline) {
       try { (this.mario as any).setPostPipeline('Outline') } catch (e) {}
     }
 
@@ -207,6 +209,9 @@ export default class MainScene extends Phaser.Scene {
 
     // 监听尺寸变化，重新布局 HUD，并调整相机视口尺寸
     this.scale.on('resize', this.onResize, this)
+
+    // 场景淡入过渡，避免突兀切换
+    this.cameras.main.fadeIn(250, 0, 0, 0)
   }
 
   update(time: number, delta: number) {
@@ -304,6 +309,13 @@ export default class MainScene extends Phaser.Scene {
 
     if (stepOnEnemy) {
       mario.body.setVelocityY(-80)
+      // 踩踏敌人时轻微震屏（可配置开关，增强打击感，幅度很小以避免眩晕）
+      try {
+        const cfg = (require('../config') as any).default || ({} as any)
+        if (!cfg.fx || cfg.fx.cameraShake) this.cameras.main.shake(100, 0.003)
+      } catch (_) {
+        this.cameras.main.shake(100, 0.003)
+      }
     } else if (!mario.protected && enemy.attackPower) {
       mario.die()
     }
@@ -381,8 +393,13 @@ export default class MainScene extends Phaser.Scene {
           lives: this.hud.getValue('lives'),
         }
       : {}
-    container.clearInstances()
-    this.scene.restart(data)
+    // 先淡出，再重启，过渡更平滑
+    const cam = this.cameras.main
+    cam.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE as any, () => {
+      container.clearInstances()
+      this.scene.restart(data)
+    })
+    cam.fadeOut(200, 0, 0, 0)
   }
 
   private gameOver() {
