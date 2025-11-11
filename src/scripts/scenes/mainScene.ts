@@ -1,5 +1,7 @@
 import config from '../config'
 import AnimatedTiles from '../helpers/animatedTiles'
+import VignettePipeline from '../pipelines/vignettePipeline'
+import OutlinePipeline from '../pipelines/outlinePipeline'
 import Debug from '../helpers/debug'
 import CountDown from '../helpers/countdown'
 
@@ -39,6 +41,17 @@ export default class MainScene extends Phaser.Scene {
     window.__myGame = this
 
     const map = this.make.tilemap({ key: 'map' })
+    // WebGL 后期与描边管线注册
+    const isWebGL = (this.game.renderer as any).pipelines !== undefined
+    if (isWebGL) {
+      try {
+        (this.game.renderer as any).addPipeline('Vignette', new VignettePipeline(this.game))
+        (this.game.renderer as any).addPipeline('Outline', new OutlinePipeline(this.game))
+        this.cameras.main.setPostPipeline('Vignette')
+      } catch (e) {
+        // 忽略重复注册
+      }
+    }
     const tileset = map.addTilesetImage('SuperMarioBros-World1-1', 'tiles')
     const worldLayer = map.createLayer('world', tileset!)!.setCollisionByProperty({ collide: true })
 
@@ -126,6 +139,9 @@ export default class MainScene extends Phaser.Scene {
         if (!this.music.isPlaying) this.music.play({ loop: true })
       })
     })
+    if (isWebGL) {
+      try { (this.mario as any).setPostPipeline('Outline') } catch (e) {}
+    }
 
     const endPoint = worldLayer.findByIndex(5)
     // 终点旗杆（确保找到终点）

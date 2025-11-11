@@ -32,7 +32,22 @@ export default class Hud {
   }
 
   public setValue(key: string, value: string | number) {
-    this[key].value = value
+    const header: HeaderText = this[key]
+    const oldVal = Number(header.value)
+    const newVal = Number(value)
+    if (!isNaN(oldVal) && !isNaN(newVal)) {
+      const o = { n: oldVal }
+      this.scene.tweens.add({
+        targets: o,
+        n: newVal,
+        duration: 300,
+        ease: 'sine.out',
+        onUpdate: () => (header.value = String(Math.floor(o.n))),
+        onComplete: () => (header.value = String(newVal)),
+      })
+    } else {
+      header.value = String(value)
+    }
   }
 
   public getValue(key: string): string | number {
