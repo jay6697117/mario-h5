@@ -13,6 +13,20 @@ export default class FireBall extends Phaser.Physics.Arcade.Sprite {
    * 火球的垂直弹力
    */
   private bounceY = 1
+  private pm?: Phaser.GameObjects.Particles.ParticleEmitterManager
+  private trail?: Phaser.GameObjects.Particles.ParticleEmitter
+
+  private static ensureSparkTexture(scene: Phaser.Scene) {
+    const key = 'fire-spark'
+    if (!scene.textures.exists(key)) {
+      const g = scene.make.graphics({ x: 0, y: 0, add: false })
+      g.fillStyle(0xffc04d, 1)
+      g.fillCircle(2, 2, 2)
+      g.generateTexture(key, 4, 4)
+      g.destroy()
+    }
+    return key
+  }
 
   constructor(scene: Phaser.Scene, texture: string) {
     super(scene, 0, 0, texture, 'fire/fly1')
@@ -39,6 +53,20 @@ export default class FireBall extends Phaser.Physics.Arcade.Sprite {
         end: 3,
       }),
       frameRate: 15,
+    })
+
+    // 尾迹粒子（加色）
+    const ptex = FireBall.ensureSparkTexture(scene)
+    this.pm = scene.add.particles(ptex)
+    this.trail = this.pm.createEmitter({
+      follow: this as any,
+      lifespan: 300,
+      frequency: 30,
+      alpha: { start: 0.9, end: 0 },
+      scale: { start: 1, end: 0 },
+      speed: { min: 10, max: 40 },
+      blendMode: 'ADD' as any,
+      quantity: 1,
     })
   }
 
@@ -71,8 +99,12 @@ export default class FireBall extends Phaser.Physics.Arcade.Sprite {
     this.isExplode = true
     this.scene.sound.playAudioSprite('sfx', 'smb_bump')
     this.body.setAllowGravity(false).stop()
+    // 停止尾迹，并做一次爆发
+    this.trail?.stop()
+    this.pm?.emitParticleAt(this.x, this.y, 12)
     this.play('fireExplode').once(Phaser.Animations.Events.ANIMATION_COMPLETE, () => {
       this.disableBody(true, true)
+      this.trail?.start()
     })
   }
 }

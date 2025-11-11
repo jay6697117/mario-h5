@@ -82,12 +82,15 @@ export default class MainScene extends Phaser.Scene {
     this.tweens.add({ targets: cloudsNear, y: '+=4', duration: 2200, yoyo: true, repeat: -1, ease: 'sine.inOut' })
 
     // 添加游戏说明（中文，缩小且略微透明，避免干扰）
-    this.add
+    const help = this.add
       .text(12, 72, config.helpText, { fontFamily: 'sans-serif', fontSize: '12px', color: '#FFFFFF' })
       .setLineSpacing(4)
       .setDepth(100)
       .setScrollFactor(0, 0)
       .setAlpha(0.6)
+    this.time.delayedCall(3000, () => {
+      this.tweens.add({ targets: help, alpha: 0.25, duration: 800, ease: 'sine.out' })
+    })
 
     // tile 动画
     this.animatedTiles = new AnimatedTiles(map, tileset!)
