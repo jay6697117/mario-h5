@@ -1,0 +1,315 @@
+{
+  "projectName": "mario-h5",
+  "generatedAt": "2025-11-12",
+  "description": "超级玛丽Web版游戏项目知识图谱",
+  "entities": [
+    {
+      "name": "mario-h5",
+      "entityType": "project",
+      "observations": [
+        "超级玛丽Web版游戏项目",
+        "基于Phaser 3游戏引擎和TypeScript开发",
+        "使用Webpack构建工具进行打包",
+        "支持移动端和桌面端自适应",
+        "包含完整的游戏逻辑、物理系统和音效系统"
+      ]
+    },
+    {
+      "name": "Phaser3GameEngine",
+      "entityType": "framework",
+      "observations": [
+        "核心游戏引擎，版本3.55.2",
+        "提供Arcade物理引擎支持",
+        "通过CDN外部化加载以减小包体积",
+        "支持WebGL和Canvas渲染模式",
+        "配置了FIT缩放模式和像素化渲染",
+        "使用Phaser.AUTO自动选择渲染器",
+        "背景色设置为#6888ff（蓝天色）",
+        "启用像素艺术渲染（pixelArt: true）",
+        "启用像素圆整（roundPixels: true）",
+        "支持动态尺寸调整和自适应缩放"
+      ]
+    },
+    {
+      "name": "Player",
+      "entityType": "gameObject",
+      "observations": [
+        "玩家角色类，位于src/scripts/objects/player.ts",
+        "支持多种能力系统：移动、跳跃、变大、发射火球、进入管道、撞砖块",
+        "实现了死亡和复活机制",
+        "包含完整的动画状态：站立、行走、跳跃、转身、蹲下、死亡等",
+        "使用PowerManage管理能力系统",
+        "体积设置为8x16像素",
+        "初始位置配置为initX=96, initY=100",
+        "支持多种动画状态：普通、超级、火焰",
+        "实现了复活点系统，推出屏幕后在最近安全点复活",
+        "支持保护状态（protected）和半透明效果"
+      ]
+    },
+    {
+      "name": "PowerSystem",
+      "entityType": "system",
+      "observations": [
+        "能力系统，位于src/scripts/powers/目录",
+        "包含Move、Jump、Large、Fire、Invincible、EnterPipe、HitBrick等能力",
+        "使用PowerManage类进行能力管理",
+        "支持能力的添加、移除、替换和查询",
+        "每个能力实现Power接口，包含update、overlapEnemy、colliderWorld等钩子",
+        "Move能力：最大速度200，加速度250",
+        "Jump能力：跳跃速度-200，最大下落速度300，跳跃持续时间220ms",
+        "Fire能力：最多同时2个火球，通过B键发射",
+        "Large能力：体积变为8x32，受伤后变回小体积",
+        "Invincible能力：无敌状态，可以直接杀死敌人"
+      ]
+    },
+    {
+      "name": "EnemySystem",
+      "entityType": "system",
+      "observations": [
+        "敌人系统，位于src/scripts/objects/enemies/目录",
+        "包含Goomba（蘑菇怪）和Turtle（乌龟）两种敌人",
+        "使用EnemyGroup进行对象池管理",
+        "支持动态加载和按需创建敌人",
+        "实现了敌人与玩家、敌人之间、敌人与地图的碰撞检测",
+        "Goomba：移动速度-30，被踩后直接死亡",
+        "Turtle：可以缩起来，缩起后可以被踢动，踢动速度250",
+        "敌人使用对象池管理，超出范围后回收",
+        "敌人在玩家靠近画布宽度内才创建",
+        "敌人死亡时增加50分"
+      ]
+    },
+    {
+      "name": "PowerUpSystem",
+      "entityType": "system",
+      "observations": [
+        "道具系统，位于src/scripts/objects/powerUps/目录",
+        "包含Mushroom（蘑菇）、Flower（火焰花）、Star（无敌星）等道具",
+        "使用PowerUpGroup进行管理",
+        "道具出现时有上升动画效果",
+        "拾取道具时播放音效和增加分数",
+        "Mushroom移动速度50，拾取后增加1000分",
+        "Flower拾取后增加2000分，获得Fire能力",
+        "Star移动速度200，拾取后增加1000分并获得无敌状态",
+        "1up蘑菇：拾取后增加1条生命",
+        "金币拾取时有星星粒子爆发效果和+1浮动提示"
+      ]
+    },
+    {
+      "name": "MainScene",
+      "entityType": "scene",
+      "observations": [
+        "主游戏场景，位于src/scripts/scenes/mainScene.ts",
+        "负责初始化游戏世界、玩家、敌人、道具等对象",
+        "处理所有碰撞检测和物理交互",
+        "管理HUD显示（分数、金币、时间、生命）",
+        "支持WebGL后处理效果（暗角、描边）",
+        "实现了倒计时和关卡完成逻辑",
+        "游戏默认分辨率400x240",
+        "支持FPS显示和实时更新",
+        "游戏时间默认180秒（3分钟）",
+        "生命数设置为Infinity（无限）",
+        "支持多种视觉特效：暗角、描边、视差、相机震动、尾迹"
+      ]
+    },
+    {
+      "name": "PreloadScene",
+      "entityType": "scene",
+      "observations": [
+        "资源预加载场景，位于src/scripts/scenes/preloadScene.ts",
+        "负责加载图片、音频、地图等游戏资源",
+        "显示加载进度条和百分比",
+        "支持动态加载MainScene以实现代码分包",
+        "加载完成后自动切换到主场景"
+      ]
+    },
+    {
+      "name": "TsyringeIoC",
+      "entityType": "library",
+      "observations": [
+        "依赖注入容器库",
+        "用于管理游戏对象的依赖关系",
+        "通过@autoInjectable和@inject装饰器实现自动注入",
+        "注册了Map、WorldLayer、Cursors、Brick、Player、EnemyGroup、PowerUpGroup等核心对象",
+        "支持装饰器语法（experimentalDecorators: true）",
+        "使用container.register注册单例",
+        "使用container.clearInstances清理实例",
+        "支持@inject注入具名依赖",
+        "支持@autoInjectable自动解析依赖"
+      ]
+    },
+    {
+      "name": "WebpackBuildSystem",
+      "entityType": "buildTool",
+      "observations": [
+        "使用Webpack 4进行项目构建",
+        "配置了开发和生产两种模式",
+        "生产模式使用JavaScriptObfuscator进行代码混淆",
+        "支持代码分包和按需加载",
+        "使用ts-loader编译TypeScript代码",
+        "入口文件：src/scripts/game.ts",
+        "输出目录：dist/",
+        "支持代码分包：vendors、main-scene、enemy-*、powerup-*",
+        "生产模式启用contenthash文件名",
+        "使用CopyWebpackPlugin复制assets和favicon"
+      ]
+    },
+    {
+      "name": "PhysicsSystem",
+      "entityType": "system",
+      "observations": [
+        "使用Phaser的Arcade物理引擎",
+        "配置了垂直重力（650）和碰撞检测",
+        "支持速度限制、加速度、弹跳等物理属性",
+        "处理玩家、敌人、道具与地图的碰撞",
+        "实现了物理世界边界和相机跟随",
+        "重力配置：x=0, y=650",
+        "支持物体边界和碰撞检测",
+        "玩家踩敌人时弹起速度-80",
+        "相机跟随玩家使用lerp值0.1",
+        "相机死区设置为120x60"
+      ]
+    },
+    {
+      "name": "AudioSystem",
+      "entityType": "system",
+      "observations": [
+        "音频系统使用Phaser的音频管理",
+        "包含背景音乐（overworld）和音效（sfx）",
+        "音效使用AudioSprite技术打包多个音效",
+        "支持音效随机化速率以减轻听觉疲劳",
+        "包含跳跃、踩踏、金币、吃道具等多种音效",
+        "背景音乐循环播放",
+        "音效支持64位随机化速率（0.95-1.05）",
+        "支持多实例音效（instances: 4）",
+        "音效包括：smb_jump、smb_stomp、smb_coin、smb_powerup、smb_fireball等",
+        "支持ogg、mp3多种音频格式"
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "from": "mario-h5",
+      "to": "Phaser3GameEngine",
+      "relationType": "uses"
+    },
+    {
+      "from": "mario-h5",
+      "to": "WebpackBuildSystem",
+      "relationType": "builds with"
+    },
+    {
+      "from": "mario-h5",
+      "to": "MainScene",
+      "relationType": "contains"
+    },
+    {
+      "from": "mario-h5",
+      "to": "PreloadScene",
+      "relationType": "contains"
+    },
+    {
+      "from": "mario-h5",
+      "to": "TsyringeIoC",
+      "relationType": "uses"
+    },
+    {
+      "from": "MainScene",
+      "to": "Player",
+      "relationType": "manages"
+    },
+    {
+      "from": "MainScene",
+      "to": "EnemySystem",
+      "relationType": "manages"
+    },
+    {
+      "from": "MainScene",
+      "to": "PowerUpSystem",
+      "relationType": "manages"
+    },
+    {
+      "from": "MainScene",
+      "to": "PhysicsSystem",
+      "relationType": "uses"
+    },
+    {
+      "from": "MainScene",
+      "to": "AudioSystem",
+      "relationType": "uses"
+    },
+    {
+      "from": "Player",
+      "to": "PowerSystem",
+      "relationType": "uses"
+    },
+    {
+      "from": "PowerSystem",
+      "to": "EnemySystem",
+      "relationType": "interacts with"
+    },
+    {
+      "from": "PowerSystem",
+      "to": "PhysicsSystem",
+      "relationType": "interacts with"
+    },
+    {
+      "from": "EnemySystem",
+      "to": "PhysicsSystem",
+      "relationType": "uses"
+    },
+    {
+      "from": "PowerUpSystem",
+      "to": "PhysicsSystem",
+      "relationType": "uses"
+    },
+    {
+      "from": "PowerUpSystem",
+      "to": "Player",
+      "relationType": "affects"
+    },
+    {
+      "from": "PreloadScene",
+      "to": "MainScene",
+      "relationType": "loads assets for"
+    },
+    {
+      "from": "Phaser3GameEngine",
+      "to": "PhysicsSystem",
+      "relationType": "provides"
+    },
+    {
+      "from": "Phaser3GameEngine",
+      "to": "AudioSystem",
+      "relationType": "provides"
+    },
+    {
+      "from": "TsyringeIoC",
+      "to": "PowerSystem",
+      "relationType": "manages dependencies for"
+    },
+    {
+      "from": "TsyringeIoC",
+      "to": "EnemySystem",
+      "relationType": "manages dependencies for"
+    },
+    {
+      "from": "TsyringeIoC",
+      "to": "PowerUpSystem",
+      "relationType": "manages dependencies for"
+    }
+  ],
+  "statistics": {
+    "totalEntities": 12,
+    "totalRelations": 22,
+    "totalObservations": 109,
+    "entityTypes": {
+      "project": 1,
+      "framework": 1,
+      "gameObject": 1,
+      "system": 5,
+      "scene": 2,
+      "library": 1,
+      "buildTool": 1
+    }
+  }
+}
